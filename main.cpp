@@ -23,7 +23,7 @@ int main(int argc, char** argv)
   d_type** table;
   read_file();
   table = build_table(weights, values, max_weight, num_items);
-  cout << table[num_items][max_weight] << endl;
+  cout << (int)table[num_items][max_weight] << endl;
 
   // Clean up
   delete [] weights;

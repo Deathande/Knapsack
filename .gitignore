@@ -1,3 +1,5 @@
 *.swp
 data.txt
 a.out
+*.o
+knapsack

@@ -17,7 +17,7 @@ d_type** build_table(d_type* weights, d_type* values, int max_weight, int num_it
         table[i][j] = table[i-1][j];
       }
       else
-        table[i][j] = max(table[i-1][j], table[i-1][j - weights[i]] + values[i]);
+        table[i][j] = max((int)table[i-1][j], (int)table[i-1][j - weights[i]] + values[i]);
     }
   }
   return table;
