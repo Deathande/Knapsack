@@ -1,10 +1,11 @@
 CPP=g++
-CFLAGS=-c -g -Wall
+LFLAGS=-lpthread -fopenmp
+CFLAGS=-c -g -Wall -fopenmp
 
 all: knapsack
 
 knapsack: main.o knapalg.o
-	$(CPP) $+ -o $@
+	$(CPP) $(LFLAGS) $+ -o $@
 
 main.o: main.cpp
 	$(CPP) $(CFLAGS) $<

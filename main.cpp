@@ -22,14 +22,17 @@ int main(int argc, char** argv)
 {
   d_type** table;
   read_file();
-  table = build_table(weights, values, max_weight, num_items);
-  cout << (int)table[num_items][max_weight] << endl;
+  table = buffered_table(weights, values, max_weight, num_items, num_items);
+  cout << table[num_items][max_weight] << endl;
 
   // Clean up
   delete [] weights;
   delete [] values;
-  for (int i = 0; i < num_items; i++)
-    delete [] table[i];
+  for (int i = 0; i <= num_items; i++)
+  {
+    if (table[i] != NULL)
+      delete [] table[i];
+  }
   delete [] table;
 }
 
@@ -43,9 +46,11 @@ void read_file()
     num_items = stoi(line);
     getline(file, line);
     max_weight = stoi(line);
-    weights = new d_type[num_items];
-    values  = new d_type[num_items];
-    int i = 0;
+    weights = new d_type[num_items+1];
+    values  = new d_type[num_items+1];
+    weights[0] = 0;
+    values[0] = 0;
+    int i = 1;
     pair<d_type, d_type> split;
     while (getline(file, line))
     {
