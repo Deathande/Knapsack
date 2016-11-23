@@ -23,6 +23,24 @@ pair<d_type, d_type> split_data(string line);
 int main(int argc, char** argv)
 {
   string usage = "optional argument: number of items in the buffer, default 5";
+  if (argc == 2)
+  {
+    try
+    {
+      buffer_size = stoi(argv[1]);
+    }
+    catch (invalid_argument e)
+    {
+      cout << usage << endl;
+      return 0;
+    }
+  }
+  else if (argc > 2)
+  {
+    cout << usage << endl;
+    return 0;
+  }
+
   cout << "----------------------" << endl;
   cout << "|                    |" << endl;
   cout << "|  Knapsack Problem  |" << endl;
@@ -32,31 +50,24 @@ int main(int argc, char** argv)
     cout << "Debug output enabled." << endl << endl;
   # endif
 
-  if (argc == 2)
-  {
-    buffer_size = stoi(argv[1]);
-  }
-  else if (argc > 2)
-  {
-    cout << usage << endl;
-  }
 
   vector<int> indicies;
   d_type max_value = 0;
   d_type total_weight = 0;
 
   read_file();
-  cout << "Number of items: " << num_items << endl; 
-  cout << "Maximum weight: " << max_weight << endl;
-  cout << "Buffer size: " << buffer_size << endl << endl;
 
   # ifdef DEBUG
     cout << "----------------------------------------" << endl;
+    cout << "Debug output" << endl;
   # endif
   indicies = get_items(weights, values, max_weight, num_items, 2);
   # ifdef DEBUG
     cout << "----------------------------------------" << endl;
   # endif
+  cout << "Number of items: " << num_items << endl; 
+  cout << "Maximum weight: " << max_weight << endl;
+  cout << "Buffer size: " << buffer_size << endl << endl;
   cout << "Item indicies: ";
   for (unsigned int i = 0; i < indicies.size(); i++)
     cout << indicies[i] << " ";
@@ -77,6 +88,7 @@ int main(int argc, char** argv)
   for (unsigned int i = 0; i < indicies.size(); i++)
     total_weight += values[indicies[i]];
   cout << total_weight << endl;
+  cout << endl;
 
   // Clean up
   delete [] weights;

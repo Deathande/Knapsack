@@ -58,26 +58,37 @@ vector<int> get_items(d_type* weights, d_type* values, int max_weight, int num_i
   int i = num_items;
   int j = max_weight;
   buffered_table(weights, values, max_weight, num_items, buffer_size);
-  while (directions[i][j] != 0)
+  while (table[i][j] != 0)
   {
+    # ifdef DEBUG
+      cout << "get_items i: " << i << endl;
+      //cout << "get_items table[" << i << "]: ";
+      //for (int x = 0; x < max_weight; x++)
+        //cout << table[i][x] << " ";
+    # endif
     if (directions[i][j] < (unsigned int)j)
       indicies.push_back(i);
     j = directions[i][j];
+    # ifdef DEBUG
+      cout << "get_items j: " << j << endl;
+    # endif
     i--;
     if (directions[i] == NULL)
     {
       num_items -= buffer_size;
+      # ifdef DEBUG
+        cout << "get_items num_items: " << num_items << endl;
+      # endif
       buffered_table(weights, values, max_weight, num_items, buffer_size);
     }
   }
+  // clean up tables
+  for (int i = 0; i < buffer_size; i++)
+  {
+    delete [] table[i];
+    delete [] directions[i];
+  }
+  delete [] table;
+  delete [] directions;
   return indicies;
-}
-
-d_type** init_table(int max_weight, int num_items)
-{
-  d_type** table;
-  table = new d_type*[num_items];
-  for (int i = 0; i < num_items; i++)
-    table[i] = new d_type[max_weight];
-  return table;
 }
