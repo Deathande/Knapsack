@@ -1,8 +1,11 @@
 CPP=g++
 LFLAGS=-lpthread -fopenmp
-CFLAGS=-c -g -Wall -fopenmp
+CFLAGS=-c -g -Wall -fopenmp #-D DEBUG
 
-all: knapsack
+all: knapsack generator
+
+generator: generator.cpp
+	$(CPP) $< -o $@
 
 knapsack: main.o knapalg.o
 	$(CPP) $(LFLAGS) $+ -o $@
@@ -14,4 +17,4 @@ knapalg.o: knapalg.cpp knapalg.h
 	$(CPP) $(CFLAGS) $<
 
 clean:
-	rm -f *.o knapsack
+	rm -f *.o knapsack generator

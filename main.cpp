@@ -4,6 +4,7 @@
 #include <vector>
 #include <fstream>
 #include <cstdlib>
+#include <cstdlib>
 #include "knapalg.h"
 
 using namespace std;
@@ -13,6 +14,7 @@ int max_weight;
 int num_items;
 d_type* weights;
 d_type* values;
+int buffer_size = 5;
 
 void read_file();
 void create_table();
@@ -20,20 +22,73 @@ pair<d_type, d_type> split_data(string line);
 
 int main(int argc, char** argv)
 {
-  d_type** table;
+  string usage = "optional argument: number of items in the buffer, default 5";
+  cout << "----------------------" << endl;
+  cout << "|                    |" << endl;
+  cout << "|  Knapsack Problem  |" << endl;
+  cout << "|                    |" << endl;
+  cout << "----------------------" << endl << endl;
+  # ifdef DEBUG
+    cout << "Debug output enabled." << endl << endl;
+  # endif
+
+  if (argc == 2)
+  {
+    buffer_size = stoi(argv[1]);
+  }
+  else if (argc > 2)
+  {
+    cout << usage << endl;
+  }
+
+  vector<int> indicies;
+  d_type max_value = 0;
+  d_type total_weight = 0;
+
   read_file();
-  table = buffered_table(weights, values, max_weight, num_items, num_items);
-  cout << table[num_items][max_weight] << endl;
+  cout << "Number of items: " << num_items << endl; 
+  cout << "Maximum weight: " << max_weight << endl;
+  cout << "Buffer size: " << buffer_size << endl << endl;
+
+  # ifdef DEBUG
+    cout << "----------------------------------------" << endl;
+  # endif
+  indicies = get_items(weights, values, max_weight, num_items, 2);
+  # ifdef DEBUG
+    cout << "----------------------------------------" << endl;
+  # endif
+  cout << "Item indicies: ";
+  for (unsigned int i = 0; i < indicies.size(); i++)
+    cout << indicies[i] << " ";
+  cout << endl;
+
+  cout << "Respective weights: ";
+  for (unsigned int i = 0; i < indicies.size(); i++)
+    cout << weights[indicies[i]] << " ";
+  cout << endl << "Respective values: ";
+  for (unsigned int i = 0; i < indicies.size(); i++)
+    cout << values[indicies[i]] << " ";
+  cout << endl;
+  cout << "Max value of: ";
+  for (unsigned int i = 0; i < indicies.size(); i++)
+    max_value += values[indicies[i]];
+  cout << max_value << endl;
+  cout << "Total weight of: ";
+  for (unsigned int i = 0; i < indicies.size(); i++)
+    total_weight += values[indicies[i]];
+  cout << total_weight << endl;
 
   // Clean up
   delete [] weights;
   delete [] values;
+  /*
   for (int i = 0; i <= num_items; i++)
   {
     if (table[i] != NULL)
       delete [] table[i];
   }
   delete [] table;
+  */
 }
 
 void read_file()
