@@ -86,7 +86,7 @@ int main(int argc, char** argv)
   cout << max_value << endl;
   cout << "Total weight of: ";
   for (unsigned int i = 0; i < indicies.size(); i++)
-    total_weight += values[indicies[i]];
+    total_weight += weights[indicies[i]];
   cout << total_weight << endl;
   cout << endl;
 
