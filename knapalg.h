@@ -6,8 +6,9 @@
 #include <vector>
 #include <cstdlib>
 #include <omp.h>
+//#include "node.h"
 
-#define THREADS 2
+#define THREADS 4
 
 using namespace std;
 

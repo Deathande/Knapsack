@@ -14,7 +14,7 @@ int max_weight;
 int num_items;
 d_type* weights;
 d_type* values;
-int buffer_size = 5;
+int buffer_size = 2;
 
 void read_file();
 void create_table();
@@ -57,18 +57,11 @@ int main(int argc, char** argv)
 
   read_file();
 
-  # ifdef DEBUG
-    cout << "----------------------------------------" << endl;
-    cout << "Debug output" << endl;
-  # endif
-  indicies = get_items(weights, values, max_weight, num_items, 2);
-  # ifdef DEBUG
-    cout << "----------------------------------------" << endl;
-  # endif
   cout << "Number of items: " << num_items << endl; 
   cout << "Maximum weight: " << max_weight << endl;
   cout << "Buffer size: " << buffer_size << endl << endl;
   cout << "Item indicies: ";
+  indicies = get_items(weights, values, max_weight, num_items, 2);
   for (unsigned int i = 0; i < indicies.size(); i++)
     cout << indicies[i] << " ";
   cout << endl;
