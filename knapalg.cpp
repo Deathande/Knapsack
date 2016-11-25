@@ -1,23 +1,27 @@
 #include "knapalg.h"
 d_type** table;
 d_type** directions;
+bool allocated = false;
 int last;
 
 d_type** buffered_table(d_type* weights, d_type* values, int max_weight, int num_items, int buffer_size)
 {
-  table = new d_type*[buffer_size];
-  directions = new d_type*[buffer_size];
-  last = 0;
-  for (int i = 0; i < buffer_size; i++)
+  if (!allocated)
   {
-    table[i] = new d_type[max_weight+1];
-    directions[i] = new d_type[max_weight+1];
+    table = new d_type*[buffer_size];
+    directions = new d_type*[buffer_size];
+    for (int i = 0; i < buffer_size; i++)
+    {
+      table[i] = new d_type[max_weight+1];
+      directions[i] = new d_type[max_weight+1];
+    }
+    allocated = true;
   }
+  last = 0;
   # ifdef DEBUG
     cout << "Buffer created with  " << buffer_size << " rows and ";
     cout << max_weight << " per rows." << endl;
   # endif
-  //int to_delete = 0;
   for (int i = 0; i <= num_items; i++)
   {
     # ifdef DEBUG
@@ -90,7 +94,6 @@ vector<int> get_items(d_type* weights, d_type* values, int max_weight, int num_i
     }
   }
   // clean up tables
-  /*
   for (int i = 0; i < buffer_size; i++)
   {
     delete [] table[i];
@@ -98,6 +101,5 @@ vector<int> get_items(d_type* weights, d_type* values, int max_weight, int num_i
   }
   delete [] table;
   delete [] directions;
-  */
   return indicies;
 }
