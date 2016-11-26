@@ -11,7 +11,7 @@ namespace dock_dstructure
       node* n_node();
       node* p_node();
       d_type get_data();
-      d_type set_data(d_type);
+      void set_data(d_type);
       void set_n_node(node*);
       void set_p_node(node*);
     private:

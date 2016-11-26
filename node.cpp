@@ -4,6 +4,7 @@ namespace dock_dstructure
   template <class d_type>
   node<d_type>::node ()
   {
+    n_n = NULL;
   }
 
   template <class d_type>
@@ -25,7 +26,7 @@ namespace dock_dstructure
   }
   
   template <class d_type>
-  d_type node<d_type>::set_data(d_type d)
+  void node<d_type>::set_data(d_type d)
   {
     data = d;
   }
