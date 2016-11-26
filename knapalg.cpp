@@ -10,14 +10,18 @@ void buffered_table(d_type* weights, d_type* values, int max_weight, int num_ite
   #endif 
   start_table(buffer_size, max_weight);
   table = table->n_node();
+  d_type* current;
+  d_type* prev;
   for (int i = 1; i <= num_items; i++)
   {
-    # pragma omp parallel for num_threads(THREADS)
+    current = table->get_data();
+    prev = table->p_node()->get_data();
+    //# pragma omp parallel for num_threads(THREADS)
     for (int j = 1; j <= max_weight; j++)
     {
       if (weights[i] > (unsigned int)j)
       {
-        table->get_data()[j] = table->p_node()->get_data()[j];
+        current[j] = prev[j];
 	directions->get_data()[j] = j;
 	#ifdef DEBUG
 	  cout << table->get_data()[j] << " ";
@@ -25,20 +29,12 @@ void buffered_table(d_type* weights, d_type* values, int max_weight, int num_ite
       }
       else
       {
-        /*
-        #ifdef DEBUG
-	  cout << "weights[i]: " << weights[i] << endl;
-	  cout << "previous_table[j]: " << table->p_node()->get_data()[j] << endl;
-	  cout << "previous table[n_above_index]: " << table->p_node()->get_data()[j - weights[i]] << endl;
-	  cout << "values[i]: " << values[i] << endl;
-	#endif
-	*/
         int n_above_index = j - weights[i];
-        d_type above = table->p_node()->get_data()[j];
-	d_type n_above = table->p_node()->get_data()[n_above_index] + values[i];
+        d_type above = prev[j];
+	d_type n_above = prev[n_above_index] + values[i];
 	if (above > n_above)
 	{
-	  table->get_data()[j] = table->p_node()->get_data()[j];
+	  current[j] = prev[j];
 	  directions->get_data()[j] = j;
 	  # ifdef DEBUG
 	    cout << table->get_data()[j] << " ";
@@ -46,7 +42,7 @@ void buffered_table(d_type* weights, d_type* values, int max_weight, int num_ite
 	}
 	else
 	{
-	  table->get_data()[j] = n_above;
+	  current[j] = n_above;
 	  directions->get_data()[j] = n_above_index;
 	  # ifdef DEBUG
 	    cout << table->get_data()[j] << " ";
