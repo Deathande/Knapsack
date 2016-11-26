@@ -15,7 +15,7 @@ int max_weight;
 int num_items;
 d_type* weights;
 d_type* values;
-int buffer_size = 2;
+int buffer_size = 5;
 
 void read_file();
 void create_table();

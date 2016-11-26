@@ -13,7 +13,7 @@ knapsack: main.o knapalg.o
 main.o: main.cpp
 	$(CPP) $(CFLAGS) $<
 
-knapalg.o: knapalg.cpp knapalg.h
+knapalg.o: knapalg.cpp knapalg.h node.h node.cpp
 	$(CPP) $(CFLAGS) $<
 
 clean:

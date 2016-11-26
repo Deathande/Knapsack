@@ -6,7 +6,7 @@
 #include <vector>
 #include <cstdlib>
 #include <omp.h>
-//#include "node.h"
+#include "node.h"
 
 #define THREADS 4
 

@@ -8,7 +8,6 @@ d_type** buffered_table(d_type* weights, d_type* values, int max_weight, int num
   last = 0;
   int n_above_index;
   start_table(buffer_size, max_weight);
-  //cout << "here" << endl;
   for (int i = 1; i <= num_items; i++)
   {
     # ifdef DEBUG
@@ -17,11 +16,7 @@ d_type** buffered_table(d_type* weights, d_type* values, int max_weight, int num
     # endif
     for (int j = 1; j <= max_weight; j++)
     {
-      /*if (i == 0 || j == 0)
-      {
-        table[i % buffer_size][j] = 0;
-      }
-      else */if (weights[i] > (unsigned int)j)
+      if (weights[i] > (unsigned int)j)
       {
         table[i % buffer_size][j] = table[(i-1) % buffer_size][j];
 	directions[i % buffer_size][j] = j;
