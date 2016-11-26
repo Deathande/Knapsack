@@ -12,17 +12,19 @@ void buffered_table(d_type* weights, d_type* values, int max_weight, int num_ite
   table = table->n_node();
   d_type* current;
   d_type* prev;
+  d_type* c_dir;
   for (int i = 1; i <= num_items; i++)
   {
     current = table->get_data();
     prev = table->p_node()->get_data();
+    c_dir = directions->get_data();
     //# pragma omp parallel for num_threads(THREADS)
     for (int j = 1; j <= max_weight; j++)
     {
       if (weights[i] > (unsigned int)j)
       {
         current[j] = prev[j];
-	directions->get_data()[j] = j;
+	c_dir[j] = j;
 	#ifdef DEBUG
 	  cout << table->get_data()[j] << " ";
 	#endif
@@ -35,7 +37,7 @@ void buffered_table(d_type* weights, d_type* values, int max_weight, int num_ite
 	if (above > n_above)
 	{
 	  current[j] = prev[j];
-	  directions->get_data()[j] = j;
+	  c_dir[j] = j;
 	  # ifdef DEBUG
 	    cout << table->get_data()[j] << " ";
 	  # endif
@@ -43,7 +45,7 @@ void buffered_table(d_type* weights, d_type* values, int max_weight, int num_ite
 	else
 	{
 	  current[j] = n_above;
-	  directions->get_data()[j] = n_above_index;
+	  c_dir[j] = n_above_index;
 	  # ifdef DEBUG
 	    cout << table->get_data()[j] << " ";
 	  # endif
