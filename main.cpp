@@ -58,13 +58,24 @@ int main(int argc, char** argv)
 
   read_file();
 
+  #ifdef DEBUG
+    cout << "weights: ";
+    for (int i = 0; i <= num_items; i++)
+      cout << weights[i] << " ";
+    cout << endl;
+    cout << "values: ";
+    for (int i = 0; i <= num_items; i++)
+      cout << values[i] << " ";
+    cout << endl;
+  #endif
+
   cout << "Number of items: " << num_items << endl; 
   cout << "Maximum weight: " << max_weight << endl;
   cout << "Buffer size: " << buffer_size << endl << endl;
-  cout << "Item indicies: ";
   time_t t = clock();
-  indicies = get_items(weights, values, max_weight, num_items, 2);
+  indicies = get_items(weights, values, max_weight, num_items, buffer_size);
   t = clock() - t;
+  cout << "Item indicies: ";
   for (unsigned int i = 0; i < indicies.size(); i++)
     cout << indicies[i] << " ";
   cout << endl;

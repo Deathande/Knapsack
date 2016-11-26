@@ -8,7 +8,7 @@
 #include <omp.h>
 #include "node.h"
 
-#define THREADS 4
+#define THREADS 2
 
 using namespace std;
 

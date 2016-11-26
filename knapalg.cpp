@@ -5,40 +5,63 @@ dock_dstructure::node<d_type*>* directions;
 
 void buffered_table(d_type* weights, d_type* values, int max_weight, int num_items, int buffer_size)
 {
-  int n_above_index;
+  #ifdef DEBUG
+    cout << "Table excluding zero rows" << endl;
+  #endif 
   start_table(buffer_size, max_weight);
+  table = table->n_node();
   for (int i = 1; i <= num_items; i++)
   {
-    # ifdef DEBUG
-      cout << "i: " << i << endl;
-    # endif
+    # pragma omp parallel for num_threads(THREADS)
     for (int j = 1; j <= max_weight; j++)
     {
       if (weights[i] > (unsigned int)j)
       {
         table->get_data()[j] = table->p_node()->get_data()[j];
 	directions->get_data()[j] = j;
+	#ifdef DEBUG
+	  cout << table->get_data()[j] << " ";
+	#endif
       }
       else
       {
-        n_above_index = j - weights[i];
+        /*
+        #ifdef DEBUG
+	  cout << "weights[i]: " << weights[i] << endl;
+	  cout << "previous_table[j]: " << table->p_node()->get_data()[j] << endl;
+	  cout << "previous table[n_above_index]: " << table->p_node()->get_data()[j - weights[i]] << endl;
+	  cout << "values[i]: " << values[i] << endl;
+	#endif
+	*/
+        int n_above_index = j - weights[i];
         d_type above = table->p_node()->get_data()[j];
 	d_type n_above = table->p_node()->get_data()[n_above_index] + values[i];
 	if (above > n_above)
 	{
-	  table->get_data()[j] = j;
+	  table->get_data()[j] = table->p_node()->get_data()[j];
 	  directions->get_data()[j] = j;
+	  # ifdef DEBUG
+	    cout << table->get_data()[j] << " ";
+	  # endif
 	}
 	else
 	{
 	  table->get_data()[j] = n_above;
 	  directions->get_data()[j] = n_above_index;
+	  # ifdef DEBUG
+	    cout << table->get_data()[j] << " ";
+	  # endif
 	}
       }
     }
+    #ifdef DEBUG
+      cout << endl;
+    #endif
     table = table->n_node();
     directions = directions->n_node();
   }
+  table = table->p_node();
+  directions = directions->p_node();
 }
 
 vector<int> get_items(d_type* weights, d_type* values, int max_weight, int num_items, int buffer_size)
@@ -55,24 +78,15 @@ vector<int> get_items(d_type* weights, d_type* values, int max_weight, int num_i
   dock_dstructure::node<d_type*>* hp = table;
   while (table->get_data()[j] != 0)
   {
-    # ifdef DEBUG
-      cout << "get_items i: " << i << endl;
-    # endif
     if (directions->get_data()[j] < (unsigned int)j)
       indicies.push_back(i);
     j = directions->get_data()[j];
-    # ifdef DEBUG
-      cout << "get_items j: " << j << endl;
-    # endif
-    table = table->p_node();
     directions = directions->p_node();
+    table = table->p_node();
     i--;
     if (hp == table)
     {
       num_items -= buffer_size;
-      # ifdef DEBUG
-        cout << "get_items num_items: " << num_items << endl;
-      # endif
       buffered_table(weights, values, max_weight, num_items, buffer_size);
     }
   }
