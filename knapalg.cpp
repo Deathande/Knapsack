@@ -1,7 +1,6 @@
 #include "knapalg.h"
 dock_dstructure::node<d_type*>* table;
 dock_dstructure::node<d_type*>* directions;
-//int last;
 
 void buffered_table(d_type* weights, d_type* values, int max_weight, int num_items, int buffer_size)
 {
@@ -21,7 +20,7 @@ void buffered_table(d_type* weights, d_type* values, int max_weight, int num_ite
     //# pragma omp parallel for num_threads(THREADS)
     for (int j = 1; j <= max_weight; j++)
     {
-      if (weights[i] > (unsigned int)j)
+      if (weights[i] > (d_type)j)
       {
         current[j] = prev[j];
 	c_dir[j] = j;
@@ -76,7 +75,7 @@ vector<int> get_items(d_type* weights, d_type* values, int max_weight, int num_i
   dock_dstructure::node<d_type*>* hp = table;
   while (table->get_data()[j] != 0)
   {
-    if (directions->get_data()[j] < (unsigned int)j)
+    if (directions->get_data()[j] < (d_type)j)
       indicies.push_back(i);
     j = directions->get_data()[j];
     directions = directions->p_node();
@@ -88,18 +87,11 @@ vector<int> get_items(d_type* weights, d_type* values, int max_weight, int num_i
       buffered_table(weights, values, max_weight, num_items, buffer_size);
     }
   }
-  // clean up tables
-  /*
-  for (int i = 0; i < buffer_size; i++)
-  {
-    delete [] table[i];
-    delete [] directions[i];
-  }
-  delete [] table;
-  delete [] directions;
-  */
   return indicies;
 }
+
+// Build a interconnected linked list where the tail
+// pointer points to the head pointer and vis versa.
 void init_buff(int bs, int mw)
 {
   table = new dock_dstructure::node<d_type*>();
@@ -131,8 +123,10 @@ void init_buff(int bs, int mw)
 
 void start_table(int bs, int mw)
 {
-  for (int i = 0; i <= mw; i++)
+  // initialize the first row
+  for (int i = 1; i <= mw; i++)
     table->get_data()[i] = 0;
+  // Initialize the first column
   dock_dstructure::node<d_type*>* cn = table;
   do
   {
