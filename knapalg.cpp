@@ -6,33 +6,29 @@ int last;
 d_type** buffered_table(d_type* weights, d_type* values, int max_weight, int num_items, int buffer_size)
 {
   last = 0;
-  # ifdef DEBUG
-    cout << "Buffer created with  " << buffer_size << " rows and ";
-    cout << max_weight << " per rows." << endl;
-  # endif
-  for (int i = 0; i <= num_items; i++)
+  int n_above_index;
+  start_table(buffer_size, max_weight);
+  //cout << "here" << endl;
+  for (int i = 1; i <= num_items; i++)
   {
     # ifdef DEBUG
       cout << "i: " << i << endl;
       cout << "i \% buffer_size: " << i % buffer_size << endl;
     # endif
-    //table[i] = new d_type[max_weight+1];
-    //directions[i] = new d_type[max_weight+1];
-    //# pragma omp parallel for num_threads(THREADS)
-    for (int j = 0; j <= max_weight; j++)
+    for (int j = 1; j <= max_weight; j++)
     {
-      if (i == 0 || j == 0)
+      /*if (i == 0 || j == 0)
       {
         table[i % buffer_size][j] = 0;
       }
-      else if (weights[i] > (unsigned int)j)
+      else */if (weights[i] > (unsigned int)j)
       {
         table[i % buffer_size][j] = table[(i-1) % buffer_size][j];
 	directions[i % buffer_size][j] = j;
       }
       else
       {
-        int n_above_index = j - weights[i];
+        n_above_index = j - weights[i];
         d_type above = table[(i-1) % buffer_size][j];
 	d_type n_above = table[(i-1) % buffer_size][n_above_index] + values[i];
 	if (above > n_above)
@@ -63,6 +59,10 @@ vector<int> get_items(d_type* weights, d_type* values, int max_weight, int num_i
     table[i] = new d_type[max_weight+1];
     directions[i] = new d_type[max_weight+1];
   }
+  # ifdef DEBUG
+    cout << "Buffer created with  " << buffer_size << " rows and ";
+    cout << max_weight << " per rows." << endl;
+  # endif
   buffered_table(weights, values, max_weight, num_items, buffer_size);
   vector<int> indicies;
   while (table[i % buffer_size][j] != 0)
@@ -97,4 +97,12 @@ vector<int> get_items(d_type* weights, d_type* values, int max_weight, int num_i
   delete [] table;
   delete [] directions;
   return indicies;
+}
+
+void start_table(int bs, int mw)
+{
+  for (int i = 0; i <= bs; i++)
+    table[i][0] = 0;
+  for (int i = 0; i <= mw; i++)
+    table[0][i] = 0;
 }

@@ -5,6 +5,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <cstdlib>
+#include <ctime>
 #include "knapalg.h"
 
 using namespace std;
@@ -61,7 +62,9 @@ int main(int argc, char** argv)
   cout << "Maximum weight: " << max_weight << endl;
   cout << "Buffer size: " << buffer_size << endl << endl;
   cout << "Item indicies: ";
+  time_t t = clock();
   indicies = get_items(weights, values, max_weight, num_items, 2);
+  t = clock() - t;
   for (unsigned int i = 0; i < indicies.size(); i++)
     cout << indicies[i] << " ";
   cout << endl;
@@ -81,6 +84,8 @@ int main(int argc, char** argv)
   for (unsigned int i = 0; i < indicies.size(); i++)
     total_weight += weights[indicies[i]];
   cout << total_weight << endl;
+  cout << "Time of: " << t / (float)CLOCKS_PER_SEC;
+  cout << " seconds" << endl;
   cout << endl;
 
   // Clean up
