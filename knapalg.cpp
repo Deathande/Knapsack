@@ -3,27 +3,28 @@ dock_dstructure::node<d_type*>* table;
 dock_dstructure::node<d_type*>* directions;
 queue<d_type*> disk_queue;
 FILE* disk;
+bool cont = true;
+int mw;
+int ni;
+int bs;
 
-void buffered_table(d_type* weights, 
-                    d_type* values, 
-		    int max_weight, 
-		    int num_items, 
-		    int buffer_size)
+void buffered_table(d_type* weights,
+                    d_type* values)
 {
   #ifdef DEBUG
     cout << "Table excluding zero rows" << endl;
   #endif 
-  start_table(buffer_size, max_weight);
+  start_table();
   table = table->n_node();
   d_type* current;
   d_type* prev;
   d_type* c_dir;
-  for (int i = 1; i <= num_items; i++)
+  for (int i = 1; i <= ni; i++)
   {
     current = table->get_data();
     prev = table->p_node()->get_data();
     c_dir = directions->get_data();
-    for (int j = 1; j <= max_weight; j++)
+    for (int j = 1; j <= mw; j++)
     {
       if (weights[i] > (d_type)j)
       {
@@ -66,21 +67,24 @@ void buffered_table(d_type* weights,
   directions = directions->p_node();
 }
 
-vector<int> get_items( d_type* weights, 
-                       d_type* values, 
-		       int max_weight, 
-		       int num_items, 
+vector<int> get_items( d_type* weights,
+                       d_type* values,
+		       int max_weight,
+		       int num_items,
 		       int buffer_size)
 {
   int i = num_items;
   int j = max_weight;
-  init_buff(buffer_size, max_weight);
+  mw = max_weight;
+  ni = num_items;
+  bs = buffer_size;
+  init_buff();
   disk = fopen("temp_file.dat", "w+");
   # ifdef DEBUG
     cout << "Buffer created with  " << buffer_size << " rows and ";
     cout << max_weight << " per rows." << endl;
   # endif
-  buffered_table(weights, values, max_weight, num_items, buffer_size);
+  buffered_table(weights, values);
   vector<int> indicies;
   dock_dstructure::node<d_type*>* hp = table;
   while (table->get_data()[j] != 0)
@@ -93,26 +97,29 @@ vector<int> get_items( d_type* weights,
     i--;
     if (hp == table)
     {
-      num_items -= buffer_size;
-      buffered_table(weights, values, max_weight, num_items, buffer_size);
+      ni -= buffer_size;
+      buffered_table(weights, values);
     }
   }
   return indicies;
 }
 
-void write_to_disk(d_type* data, int &max_weight)
+void write_to_disk()
 {
-  disk_queue.push(data);
-  if (!disk_queue.empty())
+  while (!disk_queue.empty() || cont)
   {
-    //d_type* block = disk_queue.pop();
-    //fwrite(block, sizeof(block), max_weight, disk);
-  } 
+    if (!disk_queue.empty())
+    {
+      d_type* row = disk_queue.front();
+      fwrite(row, sizeof(d_type), mw, disk);
+      disk_queue.pop();
+    }
+  }
 }
 
 // Build a interconnected linked list where the tail
 // pointer points to the head pointer and vis versa.
-void init_buff(int bs, int mw)
+void init_buff()
 {
   table = new dock_dstructure::node<d_type*>();
   directions = new dock_dstructure::node<d_type*>();
@@ -148,7 +155,7 @@ void init_buff(int bs, int mw)
 }
 
 
-void start_table(int bs, int mw)
+void start_table()
 {
   // initialize the first row
   for (int i = 1; i <= mw; i++)

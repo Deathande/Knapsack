@@ -5,7 +5,8 @@
 #include <iostream>
 #include <vector>
 #include <cstdlib>
-#include <omp.h>
+//#include <omp.h>
+#include <pthread.h>
 #include <queue>
 #include <stdio.h>
 #include "node.h"
@@ -19,10 +20,7 @@ using namespace std;
 typedef unsigned int d_type;
 
 void buffered_table(d_type* weights, 
-                    d_type* values, 
-		    int max_weight, 
-		    int num_items, 
-		    int buffer_size);
+                    d_type* values);
 
 vector<int> get_items(d_type* weights, 
                       d_type* values, 
@@ -30,8 +28,8 @@ vector<int> get_items(d_type* weights,
 		      int num_items, 
 		      int buffer_size);
 
-void start_table(int bs, int mw);
-void init_buff(int bs, int mw);
-void write_to_disk(int&);
+void start_table();
+void init_buff();
+void write_to_disk();
 
 #endif
