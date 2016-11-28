@@ -1,10 +1,10 @@
-
 namespace dock_dstructure
 {
   template <class d_type>
   node<d_type>::node ()
   {
     n_n = NULL;
+    p_n = NULL;
   }
 
   template <class d_type>

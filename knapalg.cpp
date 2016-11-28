@@ -1,8 +1,14 @@
 #include "knapalg.h"
 dock_dstructure::node<d_type*>* table;
 dock_dstructure::node<d_type*>* directions;
+queue<d_type*> disk_queue;
+FILE* disk;
 
-void buffered_table(d_type* weights, d_type* values, int max_weight, int num_items, int buffer_size)
+void buffered_table(d_type* weights, 
+                    d_type* values, 
+		    int max_weight, 
+		    int num_items, 
+		    int buffer_size)
 {
   #ifdef DEBUG
     cout << "Table excluding zero rows" << endl;
@@ -17,7 +23,6 @@ void buffered_table(d_type* weights, d_type* values, int max_weight, int num_ite
     current = table->get_data();
     prev = table->p_node()->get_data();
     c_dir = directions->get_data();
-    //# pragma omp parallel for num_threads(THREADS)
     for (int j = 1; j <= max_weight; j++)
     {
       if (weights[i] > (d_type)j)
@@ -61,11 +66,16 @@ void buffered_table(d_type* weights, d_type* values, int max_weight, int num_ite
   directions = directions->p_node();
 }
 
-vector<int> get_items(d_type* weights, d_type* values, int max_weight, int num_items, int buffer_size)
+vector<int> get_items( d_type* weights, 
+                       d_type* values, 
+		       int max_weight, 
+		       int num_items, 
+		       int buffer_size)
 {
   int i = num_items;
   int j = max_weight;
   init_buff(buffer_size, max_weight);
+  disk = fopen("temp_file.dat", "w+");
   # ifdef DEBUG
     cout << "Buffer created with  " << buffer_size << " rows and ";
     cout << max_weight << " per rows." << endl;
@@ -90,6 +100,16 @@ vector<int> get_items(d_type* weights, d_type* values, int max_weight, int num_i
   return indicies;
 }
 
+void write_to_disk(d_type* data, int &max_weight)
+{
+  disk_queue.push(data);
+  if (!disk_queue.empty())
+  {
+    //d_type* block = disk_queue.pop();
+    //fwrite(block, sizeof(block), max_weight, disk);
+  } 
+}
+
 // Build a interconnected linked list where the tail
 // pointer points to the head pointer and vis versa.
 void init_buff(int bs, int mw)
@@ -103,14 +123,21 @@ void init_buff(int bs, int mw)
 
   for (int i = 0; i < bs; i++)
   {
-    dock_dstructure::node<d_type*>* t_new_node = new dock_dstructure::node<d_type*>();
-    dock_dstructure::node<d_type*>* d_new_node = new dock_dstructure::node<d_type*>();
+    dock_dstructure::node<d_type*>* t_new_node;
+    dock_dstructure::node<d_type*>* d_new_node;
+
+    t_new_node = new dock_dstructure::node<d_type*>();
+    d_new_node = new dock_dstructure::node<d_type*>();
+
     t_new_node->set_data(new d_type[mw+1]);
     d_new_node->set_data(new d_type[mw+1]);
+
     t_cn->set_n_node(t_new_node);
     d_cn->set_n_node(d_new_node);
+
     t_new_node->set_p_node(t_cn);
     d_new_node->set_p_node(d_cn);
+
     t_cn = t_new_node;
     d_cn = d_new_node;
   }
