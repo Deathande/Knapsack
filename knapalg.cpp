@@ -1,7 +1,11 @@
 #include "knapalg.h"
 dock_dstructure::node<d_type*>* table;
 dock_dstructure::node<d_type*>* directions;
-queue<d_type*> disk_queue;
+queue<d_type*> t_disk_queue;
+queue<d_type*> d_disk_queue;
+pthread_t disk_io_thread;
+sem_t sem_full;
+sem_t sem_empty;
 FILE* disk;
 bool cont = true;
 int mw;
@@ -14,16 +18,27 @@ void buffered_table(d_type* weights,
   #ifdef DEBUG
     cout << "Table excluding zero rows" << endl;
   #endif 
-  start_table();
-  table = table->n_node();
-  d_type* current;
-  d_type* prev;
-  d_type* c_dir;
+  d_type* current = new d_type[mw+1];
+  d_type* prev = new d_type[mw+1];
+  d_type* c_dir = new d_type[mw+1];
+
+  sem_init(&sem_empty, 0, 0);
+  sem_init(&sem_full, 0, bs);
+  for (int i = 0; i <= mw; i++)
+    current[i] = 0;
+  sem_wait(&sem_full);
+  t_disk_queue.push(current);
+  sem_post(&sem_empty);
+  prev = current;
+
+  pthread_create(&disk_io_thread, 
+                 NULL, 
+		 write_to_disk,
+		 NULL);
+
   for (int i = 1; i <= ni; i++)
   {
-    current = table->get_data();
-    prev = table->p_node()->get_data();
-    c_dir = directions->get_data();
+    current[0] = 0;
     for (int j = 1; j <= mw; j++)
     {
       if (weights[i] > (d_type)j)
@@ -31,7 +46,7 @@ void buffered_table(d_type* weights,
         current[j] = prev[j];
 	c_dir[j] = j;
 	#ifdef DEBUG
-	  cout << table->get_data()[j] << " ";
+	  cout << current[j] << " ";
 	#endif
       }
       else
@@ -44,7 +59,7 @@ void buffered_table(d_type* weights,
 	  current[j] = prev[j];
 	  c_dir[j] = j;
 	  # ifdef DEBUG
-	    cout << table->get_data()[j] << " ";
+	    cout << current[j] << " ";
 	  # endif
 	}
 	else
@@ -52,19 +67,38 @@ void buffered_table(d_type* weights,
 	  current[j] = n_above;
 	  c_dir[j] = n_above_index;
 	  # ifdef DEBUG
-	    cout << table->get_data()[j] << " ";
+	    cout << current[j] << " ";
 	  # endif
 	}
       }
     }
+    sem_wait(&sem_full);
+    t_disk_queue.push(current);
+    d_disk_queue.push(c_dir);
+    sem_post(&sem_empty);
+    prev = current;
     #ifdef DEBUG
       cout << endl;
     #endif
-    table = table->n_node();
-    directions = directions->n_node();
   }
-  table = table->p_node();
-  directions = directions->p_node();
+  cont = false;
+  pthread_join(disk_io_thread, NULL);
+  delete [] current;
+  delete [] c_dir;
+  delete [] prev;
+}
+
+void* write_to_disk(void* non_used)
+{
+  while (cont)
+  {
+    sem_wait(&sem_empty);
+    d_type* row = t_disk_queue.front();
+    fwrite(row, sizeof(row[0]), mw+1, disk);
+    t_disk_queue.pop();
+    sem_post(&sem_full);
+  }
+  return NULL;
 }
 
 vector<int> get_items( d_type* weights,
@@ -78,13 +112,16 @@ vector<int> get_items( d_type* weights,
   mw = max_weight;
   ni = num_items;
   bs = buffer_size;
-  init_buff();
   disk = fopen("temp_file.dat", "w+");
+  buffered_table(weights, values);
+  fclose(disk);
+  /*
+  init_buff();
   # ifdef DEBUG
     cout << "Buffer created with  " << buffer_size << " rows and ";
     cout << max_weight << " per rows." << endl;
   # endif
-  buffered_table(weights, values);
+  //buffered_table(weights, values);
   vector<int> indicies;
   dock_dstructure::node<d_type*>* hp = table;
   while (table->get_data()[j] != 0)
@@ -102,20 +139,10 @@ vector<int> get_items( d_type* weights,
     }
   }
   return indicies;
+  */
 }
 
-void write_to_disk()
-{
-  while (!disk_queue.empty() || cont)
-  {
-    if (!disk_queue.empty())
-    {
-      d_type* row = disk_queue.front();
-      fwrite(row, sizeof(d_type), mw, disk);
-      disk_queue.pop();
-    }
-  }
-}
+
 
 // Build a interconnected linked list where the tail
 // pointer points to the head pointer and vis versa.

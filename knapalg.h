@@ -5,13 +5,11 @@
 #include <iostream>
 #include <vector>
 #include <cstdlib>
-//#include <omp.h>
-#include <pthread.h>
 #include <queue>
 #include <stdio.h>
+#include <pthread.h>
+#include <semaphore.h>
 #include "node.h"
-
-#define THREADS 2
 
 using namespace std;
 
@@ -30,6 +28,6 @@ vector<int> get_items(d_type* weights,
 
 void start_table();
 void init_buff();
-void write_to_disk();
+void* write_to_disk(void*);
 
 #endif
