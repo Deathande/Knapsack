@@ -73,8 +73,7 @@ int main(int argc, char** argv)
   cout << "Maximum weight: " << max_weight << endl;
   cout << "Buffer size: " << buffer_size << endl << endl;
   time_t t = clock();
-  /*indicies =*/ get_items(weights, values, max_weight, num_items, buffer_size);
-  /*
+  indicies = get_items(weights, values, max_weight, num_items, buffer_size);
   t = clock() - t;
   cout << "Item indicies: ";
   for (unsigned int i = 0; i < indicies.size(); i++)
@@ -99,7 +98,6 @@ int main(int argc, char** argv)
   cout << "Time of: " << t / (float)CLOCKS_PER_SEC;
   cout << " seconds" << endl;
   cout << endl;
-  */
 
   // Clean up
   delete [] weights;

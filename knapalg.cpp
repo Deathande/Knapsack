@@ -6,6 +6,7 @@ queue<d_type*> d_disk_queue;
 pthread_t disk_io_thread;
 sem_t sem_full;
 sem_t sem_empty;
+d_type* c_dir;
 FILE* disk;
 bool cont = true;
 int mw;
@@ -19,6 +20,7 @@ void buffered_table(d_type* weights,
     cout << "Table excluding zero rows" << endl;
   #endif 
   d_type* current = new d_type[mw+1];
+  d_type* temp;
   d_type* prev = new d_type[mw+1];
   d_type* c_dir = new d_type[mw+1];
 
@@ -76,7 +78,9 @@ void buffered_table(d_type* weights,
     t_disk_queue.push(current);
     d_disk_queue.push(c_dir);
     sem_post(&sem_empty);
+    temp = prev;
     prev = current;
+    current = temp;
     #ifdef DEBUG
       cout << endl;
     #endif
@@ -85,19 +89,41 @@ void buffered_table(d_type* weights,
   pthread_join(disk_io_thread, NULL);
   delete [] current;
   delete [] c_dir;
-  delete [] prev;
+  sem_destroy(&sem_full);
+  sem_destroy(&sem_empty);
+  //delete [] prev;
 }
 
 void* write_to_disk(void* non_used)
 {
+  disk = fopen("temp_file.dat", "w+");
   while (cont)
   {
     sem_wait(&sem_empty);
     d_type* row = t_disk_queue.front();
     fwrite(row, sizeof(row[0]), mw+1, disk);
+    fwrite(c_dir, sizeof(row[0]), mw+1, disk);
     t_disk_queue.pop();
     sem_post(&sem_full);
   }
+  fclose(disk);
+  return NULL;
+}
+
+void* read_from_disk(void* not_used)
+{
+  disk = fopen("temp_file.dat", "r");
+  while (cont)
+  {
+    sem_wait(&sem_full);
+    d_type* row;
+    fread(row, sizeof(row[0]), mw+1, disk);
+    t_disk_queue.push(row);
+    fread(row, sizeof(row[0]), mw+1, disk);
+    d_disk_queue.push(row);
+    sem_post(&sem_empty);
+  }
+  fclose(disk);
   return NULL;
 }
 
@@ -112,34 +138,40 @@ vector<int> get_items( d_type* weights,
   mw = max_weight;
   ni = num_items;
   bs = buffer_size;
-  disk = fopen("temp_file.dat", "w+");
   buffered_table(weights, values);
-  fclose(disk);
-  /*
-  init_buff();
-  # ifdef DEBUG
-    cout << "Buffer created with  " << buffer_size << " rows and ";
-    cout << max_weight << " per rows." << endl;
-  # endif
-  //buffered_table(weights, values);
   vector<int> indicies;
-  dock_dstructure::node<d_type*>* hp = table;
-  while (table->get_data()[j] != 0)
+  pthread_create(&disk_io_thread, 
+                 NULL, 
+		 read_from_disk,
+		 NULL);
+  sem_init(&sem_empty, 0, 0);
+  sem_init(&sem_full, 0, bs);
+  sem_wait(&sem_empty);
+  d_type* c_table = t_disk_queue.front();
+  d_type* c_dir = d_disk_queue.front();
+  while (c_table[j] != 0)
   {
-    if (directions->get_data()[j] < (d_type)j)
+    if (c_dir[j] < (d_type)j)
       indicies.push_back(i);
-    j = directions->get_data()[j];
-    directions = directions->p_node();
-    table = table->p_node();
+    j = c_dir[j];
+    sem_wait(&sem_empty);
+    d_disk_queue.pop();
+    c_dir = d_disk_queue.front();
+    t_disk_queue.pop();
+    c_table = t_disk_queue.front();
+    sem_post(&sem_full);
     i--;
+    /*
     if (hp == table)
     {
       ni -= buffer_size;
       buffered_table(weights, values);
     }
+    */
   }
+  sem_destroy(&sem_full);
+  sem_destroy(&sem_empty);
   return indicies;
-  */
 }
 
 

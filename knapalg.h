@@ -29,5 +29,6 @@ vector<int> get_items(d_type* weights,
 void start_table();
 void init_buff();
 void* write_to_disk(void*);
+void* read_from_disk(void*);
 
 #endif
