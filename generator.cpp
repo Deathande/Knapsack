@@ -35,7 +35,7 @@ int main (int argc, char* argv [])
 	
 	for (int i = 0; i < nItems; i++) {
 	        // originaly upper bound of 100
-		fprintf (pFile, "%d %d\n", IntRand (1, 100), IntRand (1, 100));
+		fprintf (pFile, "%d %d\n", IntRand (1, 5), IntRand (1, 5));
 	}
 	
 	fclose (pFile);
