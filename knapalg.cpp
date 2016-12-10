@@ -128,10 +128,15 @@ void* read_from_disk(void* not_used)
   d_type* t_row = new d_type[mw+1];
   d_type* d_row = new d_type[mw+1];
   disk = fopen("temp_file.dat", "r");
+  int i = 0;
   while (cont)
   {
     sem_wait(&sem_full); 
+    fseek(disk, i * mw+1 * sizeof(d_type), SEEK_END);
+    i++;
     fread(t_row, sizeof(t_row[0]), mw+1, disk);
+    fseek(disk, i * mw+1 * sizeof(d_type), SEEK_END);
+    i++;
     fread(d_row, sizeof(d_row[0]), mw+1, disk);
     pthread_mutex_lock(&mux);
     t_disk_queue.push(t_row);
