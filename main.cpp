@@ -13,9 +13,12 @@ using namespace std;
 const string file_name = "data.txt";
 int max_weight;
 int num_items;
-d_type* weights;
-d_type* values;
+vector<d_type> weights;
+vector<d_type> values;
 int buffer_size = 5;
+int max_value;
+int total_weight;
+vector<int> indicies;
 
 void read_file();
 void create_table();
@@ -23,25 +26,6 @@ pair<d_type, d_type> split_data(string line);
 
 int main(int argc, char** argv)
 {
-  string usage = "optional argument: number of items in the buffer, default 5";
-  if (argc == 2)
-  {
-    try
-    {
-      buffer_size = stoi(argv[1]);
-    }
-    catch (invalid_argument e)
-    {
-      cout << usage << endl;
-      return 0;
-    }
-  }
-  else if (argc > 2)
-  {
-    cout << usage << endl;
-    return 0;
-  }
-
   cout << "----------------------" << endl;
   cout << "|                    |" << endl;
   cout << "|  Knapsack Problem  |" << endl;
@@ -51,20 +35,15 @@ int main(int argc, char** argv)
     cout << "Debug output enabled." << endl << endl;
   # endif
 
-
-  vector<int> indicies;
-  d_type max_value = 0;
-  d_type total_weight = 0;
-
   read_file();
 
   #ifdef DEBUG
     cout << "weights: ";
-    for (int i = 0; i <= num_items; i++)
+    for (int i = 0; i < weights.size(); i++)
       cout << weights[i] << " ";
     cout << endl;
     cout << "values: ";
-    for (int i = 0; i <= num_items; i++)
+    for (int i = 0; i < values.size(); i++)
       cout << values[i] << " ";
     cout << endl;
   #endif
@@ -72,9 +51,11 @@ int main(int argc, char** argv)
   cout << "Number of items: " << num_items << endl; 
   cout << "Maximum weight: " << max_weight << endl;
   cout << "Buffer size: " << buffer_size << endl << endl;
-  time_t t = clock();
-  indicies = get_items(weights, values, max_weight, num_items, buffer_size);
+  clock_t t = clock();
+  indicies = get_indicies(weights, values, max_weight, 10);
   t = clock() - t;
+
+/*
   cout << "Item indicies: ";
   for (unsigned int i = 0; i < indicies.size(); i++)
     cout << indicies[i] << " ";
@@ -95,21 +76,14 @@ int main(int argc, char** argv)
   for (unsigned int i = 0; i < indicies.size(); i++)
     total_weight += weights[indicies[i]];
   cout << total_weight << endl;
+  */
   cout << "Time of: " << t / (float)CLOCKS_PER_SEC;
   cout << " seconds" << endl;
   cout << endl;
 
   // Clean up
-  delete [] weights;
-  delete [] values;
-  /*
-  for (int i = 0; i <= num_items; i++)
-  {
-    if (table[i] != NULL)
-      delete [] table[i];
-  }
-  delete [] table;
-  */
+  //delete [] weights;
+  //delete [] values;
 }
 
 void read_file()
@@ -122,17 +96,15 @@ void read_file()
     num_items = stoi(line);
     getline(file, line);
     max_weight = stoi(line);
-    weights = new d_type[num_items+1];
-    values  = new d_type[num_items+1];
-    weights[0] = 0;
-    values[0] = 0;
+    weights.push_back(0);
+    values.push_back(0);
     int i = 1;
     pair<d_type, d_type> split;
     while (getline(file, line))
     {
       split = split_data(line);
-      weights[i] = split.first;
-      values[i] = split.second;
+      weights.push_back(split.first);
+      values.push_back(split.second);
       i++;
     }
   }

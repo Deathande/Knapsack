@@ -4,12 +4,9 @@
 #include <algorithm>
 #include <iostream>
 #include <vector>
+#include <random>
 #include <cstdlib>
-#include <queue>
-#include <stdio.h>
-#include <pthread.h>
-#include <semaphore.h>
-#include "node.h"
+#include <utility>
 
 using namespace std;
 
@@ -17,18 +14,13 @@ using namespace std;
 // memory
 typedef unsigned int d_type;
 
-void buffered_table(d_type* weights, 
-                    d_type* values);
+vector<int> get_indicies(vector<d_type> weights,
+                         vector<d_type> values,
+			 int max_weight,
+			 int num);
 
-vector<int> get_items(d_type* weights, 
-                      d_type* values, 
-		      int max_weight, 
-		      int num_items, 
-		      int buffer_size);
-
-void start_table();
-void init_buff();
-void* write_to_disk(void*);
-void* read_from_disk(void*);
+double average(vector<d_type> data);
+vector< vector<d_type> > generate_pop(int num, double average_weight);
+vector<d_type> gen_member(double average_weight);
 
 #endif
