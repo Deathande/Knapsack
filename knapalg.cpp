@@ -7,7 +7,8 @@ int ni;
 vector<int> get_indicies(vector<d_type> weights,
                          vector<d_type> values,
                          int max_weight,
-                         int num)
+                         int num,
+			 int count)
 {
   srand(time(NULL));
   vector< vector<int> > population;
@@ -31,55 +32,60 @@ vector<int> get_indicies(vector<d_type> weights,
   #endif
   int sum_values;
   int sum_weights;
-  for (int i = 0; i < population.size(); i++)
+  int x = 0;
+  while (x < count)
   {
-    sum_weights = 0;
-    for (int j = 0; j < population[i].size(); j++)
-      sum_weights += weights[population[i][j]];
-    rated[i].index = i;
-    if (sum_weights > max_weight)
-    {
-      rated[i].score = -sum_weights;
-    }
-    else
-    {
-      sum_values = 0;
-      for (int j = 0; j < population[i].size(); j++)
-      {
-        sum_values += values[population[i][j]];
-      }
-      rated[i].score = sum_values;
-    }
-  }
-  sort_populus(rated);
-  #ifdef DEBUG
-    cout << "sorted population:" << endl;
-    for (int i = 0; i < rated.size(); i++)
-    {
-      cout << "{ ";
-      for (int j = 0; j < population[rated[i].index].size(); j++)
-        cout << population[rated[i].index][j] << " ";
-      cout << "}";
-      cout << " " << rated[i].score << endl;
-    }
-  #endif
-
-  if (rated[0].score > best_score)
-    best = population[rated[0].index];
-
-  mix(rated, population);
-
-   #ifdef DEBUG
-    cout << "mixed population:" << endl;
     for (int i = 0; i < population.size(); i++)
     {
-      cout << "{ ";
+      sum_weights = 0;
       for (int j = 0; j < population[i].size(); j++)
-        cout << population[i][j] << " ";
-      cout << "}";
-      cout << endl;
+        sum_weights += weights[population[i][j]];
+      rated[i].index = i;
+      if (sum_weights > max_weight)
+      {
+        rated[i].score = -sum_weights;
+      }
+      else
+      {
+        sum_values = 0;
+        for (int j = 0; j < population[i].size(); j++)
+        {
+          sum_values += values[population[i][j]];
+        }
+        rated[i].score = sum_values;
+      }
     }
-  #endif
+    sort_populus(rated);
+    #ifdef DEBUG
+      cout << "sorted population:" << endl;
+      for (int i = 0; i < rated.size(); i++)
+      {
+        cout << "{ ";
+        for (int j = 0; j < population[rated[i].index].size(); j++)
+          cout << population[rated[i].index][j] << " ";
+        cout << "}";
+        cout << " " << rated[i].score << endl;
+      }
+    #endif
+  
+    if (rated[0].score > best_score)
+      best = population[rated[0].index];
+  
+    mix(rated, population);
+  
+     #ifdef DEBUG
+      cout << "mixed population:" << endl;
+      for (int i = 0; i < population.size(); i++)
+      {
+        cout << "{ ";
+        for (int j = 0; j < population[i].size(); j++)
+          cout << population[i][j] << " ";
+        cout << "}";
+        cout << endl;
+      }
+    #endif
+    x++;
+  }
  
   return best;
 }
@@ -174,36 +180,29 @@ void mix(vector<indi_score> &rated, vector< vector<int> > &pop)
     v2 = pop[rated[rand() % mid_index].index];
     split_point1 = rand() % v1.size();
     split_point2 = rand() % v2.size();
-    #ifdef DEBUG
-      cout << "mixes:" << endl;
-    #endif
     for (int i = 0; i < split_point1; i++)
     {
-      #ifdef DEBUG
-        cout << v1[i] << " ";
-      #endif
       temp.push_back(v1[i]);
     }
     for (int i = split_point2; i < v2.size(); i++)
     {
-      #ifdef DEBUG
-        cout << v2[i] << " ";
-      #endif
       temp.push_back(v2[i]);
     }
-    cout << endl;
+    correct_vect(temp);
     new_vect.push_back(temp);
     temp.clear();
   }
-  #ifdef DEBUG
-    cout << "-----------------------------" << endl;
-  #endif
   pop = new_vect;
 }
 
 void correct_vect(vector<int> &vect)
 {
-  set<int> items;
+  map<int, int> keys;
+  for (int i = 0; i < vect.size(); i++)
+    keys[vect[i]];
+  vect.clear();
+  for (map<int, int>::iterator it = keys.begin(); it != keys.end(); it++)
+    vect.push_back(it->first);
 }
 
 void sort_populus(vector<indi_score> &pop)

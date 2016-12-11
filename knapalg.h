@@ -1,15 +1,14 @@
 #ifndef __knap_alg
 #define __knap_alg
 
-#include <algorithm>
+//#include <algorithm>
 #include <iostream>
 #include <vector>
-#include <random>
-#include <cstdlib>
+//#include <cstdlib>
 #include <ctime>
-#include <utility>
-#include <list>
-#include <set>
+//#include <utility>
+#include <map>
+#include <cmath>
 
 using namespace std;
 
@@ -26,7 +25,8 @@ struct indi_score
 vector<int> get_indicies(vector<d_type> weights,
                          vector<d_type> values,
 			 int max_weight,
-			 int num);
+			 int num,
+			 int count);
 
 double average(vector<d_type> data);
 vector< vector<int> > generate_pop(int num, double average_weight);
