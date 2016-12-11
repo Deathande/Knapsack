@@ -1,6 +1,6 @@
 CPP=g++
 LFLAGS=-lpthread -fopenmp
-CFLAGS=-c -g -fopenmp -Wall #-D DEBUG
+CFLAGS=-c -g -fopenmp -Wall -D DEBUG
 
 all: knapsack generator
 

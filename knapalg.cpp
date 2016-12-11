@@ -6,9 +6,10 @@ int ni;
 
 vector<int> get_indicies(vector<d_type> weights,
                          vector<d_type> values,
-			 int max_weight,
-			 int num)
+                         int max_weight,
+                         int num)
 {
+  srand(time(NULL));
   vector< vector<int> > population;
   vector<int> best;
   int best_score = 0;
@@ -66,15 +67,15 @@ vector<int> get_indicies(vector<d_type> weights,
   if (rated[0].score > best_score)
     best = population[rated[0].index];
 
-  //mix(rated);
+  mix(rated, population);
 
    #ifdef DEBUG
-    cout << "sorted population:" << endl;
-    for (int i = 0; i < rated.size(); i++)
+    cout << "mixed population:" << endl;
+    for (int i = 0; i < population.size(); i++)
     {
       cout << "{ ";
-      for (int j = 0; j < population[rated[i].index].size(); j++)
-        cout << population[rated[i].index][j] << " ";
+      for (int j = 0; j < population[i].size(); j++)
+        cout << population[i][j] << " ";
       cout << "}";
       cout << endl;
     }
@@ -86,7 +87,7 @@ vector<int> get_indicies(vector<d_type> weights,
 double average(vector<d_type> data)
 {
   double sum = 0;
-# pragma omp parallel for num_threads(THREADS)
+//# pragma omp parallel for num_threads(THREADS)
   for (unsigned int i = 0; i < data.size(); i++)
     sum += data[i];
   return sum / data.size();
@@ -147,15 +148,62 @@ vector<int> gen_member(double average_weight)
   return elements;
 }
 
-void mix(vector<indi_score> &rated, vector< vector<d_type> > &pop)
+void mix(vector<indi_score> &rated, vector< vector<int> > &pop)
 {
-  /*
-  for (int i = 0; i < rated.size(); i++)
+  int mid_index = floor(rated.size() / 2);
+  vector< vector<int> > new_vect(mid_index);
+  // copy top half of population into new population
+  for (int i = 0; i < mid_index; i++)
+    new_vect[i] = pop[rated[i].index];
+  #ifdef DEBUG
+    for (int i = 0; i < mid_index; i++)
+    {
+      for (unsigned int j = 0; j < pop[rated[i].index].size(); j++)
+        cout << pop[rated[i].index][j] << " ";
+      cout << endl;
+    }
+  #endif
+  vector<int> v1;
+  vector<int> v2;
+  vector<int> temp;
+  int split_point1;
+  int split_point2;
+  while (new_vect.size() < pop.size())
   {
-    if (rated[i].score < 0)
-      rated.erase(rated.begin() + i, rated.end());
+    v1 = pop[rated[rand() % mid_index].index];
+    v2 = pop[rated[rand() % mid_index].index];
+    split_point1 = rand() % v1.size();
+    split_point2 = rand() % v2.size();
+    #ifdef DEBUG
+      cout << "mixes:" << endl;
+    #endif
+    for (int i = 0; i < split_point1; i++)
+    {
+      #ifdef DEBUG
+        cout << v1[i] << " ";
+      #endif
+      temp.push_back(v1[i]);
+    }
+    for (int i = split_point2; i < v2.size(); i++)
+    {
+      #ifdef DEBUG
+        cout << v2[i] << " ";
+      #endif
+      temp.push_back(v2[i]);
+    }
+    cout << endl;
+    new_vect.push_back(temp);
+    temp.clear();
   }
-  */
+  #ifdef DEBUG
+    cout << "-----------------------------" << endl;
+  #endif
+  pop = new_vect;
+}
+
+void correct_vect(vector<int> &vect)
+{
+  set<int> items;
 }
 
 void sort_populus(vector<indi_score> &pop)

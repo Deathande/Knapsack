@@ -6,8 +6,10 @@
 #include <vector>
 #include <random>
 #include <cstdlib>
+#include <ctime>
 #include <utility>
 #include <list>
+#include <set>
 
 using namespace std;
 
@@ -30,6 +32,7 @@ double average(vector<d_type> data);
 vector< vector<int> > generate_pop(int num, double average_weight);
 vector<int> gen_member(double average_weight);
 void sort_populus(vector<indi_score> &pop);
-void mix(vector<indi_score> &rated, vector< vector<d_type> > &pop);
+void mix(vector<indi_score> &rated, vector< vector<int> > &pop);
+void correct_vect(vector<int> &vect);
 
 #endif
