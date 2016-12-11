@@ -55,7 +55,6 @@ int main(int argc, char** argv)
   indicies = get_indicies(weights, values, max_weight, 10);
   t = clock() - t;
 
-/*
   cout << "Item indicies: ";
   for (unsigned int i = 0; i < indicies.size(); i++)
     cout << indicies[i] << " ";
@@ -76,7 +75,6 @@ int main(int argc, char** argv)
   for (unsigned int i = 0; i < indicies.size(); i++)
     total_weight += weights[indicies[i]];
   cout << total_weight << endl;
-  */
   cout << "Time of: " << t / (float)CLOCKS_PER_SEC;
   cout << " seconds" << endl;
   cout << endl;
