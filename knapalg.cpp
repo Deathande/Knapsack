@@ -68,6 +68,7 @@ void buffered_table(d_type* weights,
            sizeof(int),
            mw+1,
            disk);
+    delete [] prev;
     prev = current;
 
     #ifdef DEBUG
@@ -75,9 +76,9 @@ void buffered_table(d_type* weights,
     #endif
   }
   cout << current[mw] << endl;
-  //delete [] current;
+  delete [] current;
   //delete [] prev;
-  //delete [] c_dir;
+  delete [] c_dir;
   fclose(disk);
 }
 
