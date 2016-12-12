@@ -114,7 +114,7 @@ vector<int> get_items( d_type* weights,
       //fseek(solutions, 0, SEEK_END);
       fprintf(solutions, "%d\n", (i-1));
       fclose(solutions);
-      cout << i << " ";
+      cout << (i-1) << " ";
       indices.push_back(i);
     }
     i--;
