@@ -60,7 +60,7 @@ int main(int argc, char** argv)
                           values,
                           max_weight,
                           population_size,
-			  500);
+			  50);
   t = clock() - t;
 
   cout << "Item indicies: ";

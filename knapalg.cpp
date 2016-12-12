@@ -40,7 +40,7 @@ vector<int> get_indicies(vector<d_type> weights,
   int x = 0;
   while (x < iterations)
   {
-    //cout  << x << endl;
+    cout << "iteration: " << x << endl;
     for (unsigned int i = 0; i < population.size(); i++)
     {
       sum_weights = 0;
@@ -189,24 +189,19 @@ void mix(vector<indi_score> &rated, vector< vector<int> > &pop)
     temp.clear();
   }
   pop = new_vect;
-  /*
   int path;
   for (int i = 0; i < mid_index; i++)
   {
     path = rand() % 2;
-    //cout << path << endl;
     if (path)
     {
-      //cout << "add" << endl;
       mutate_add(pop[i]);
     }
     else
     {
-      //cout << "change" << endl;
       mutate_change(pop[i]);
     }
   }
-  */
 }
 
 void correct_vect(vector<int> &vect)
@@ -234,7 +229,7 @@ void mutate_change(vector<int> &vect)
     if (hash[i] == 0)
       indices.push_back(i);
   }
-  num_changes = rand() % vect.size();
+  num_changes = rand() % vect.size() * .5;
   last = indices.size() - 1;
   for (int i = 0; i < num_changes; i++)
   {
@@ -242,7 +237,7 @@ void mutate_change(vector<int> &vect)
     vect[rand() % vect.size()] = indices[index];
     temp = indices[index];
     indices[index] = indices[last];
-    indices[last] = indices[index];
+    indices[last] = temp;
     last--;
   }
 }
@@ -263,7 +258,7 @@ void mutate_add(vector<int> &vect)
     if (hash[i] == 0)
       indices.push_back(i);
   }
-  num_additions = rand() % (ni - vect.size());
+  num_additions = rand() % (ni - vect.size()) * .5;
   last = indices.size() - 1;
   for (int i = 0; i < num_additions; i++)
   {
