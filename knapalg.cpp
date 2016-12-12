@@ -112,7 +112,7 @@ vector<int> get_items( d_type* weights,
     {
       solutions = fopen(SOL_FILE, "a");
       //fseek(solutions, 0, SEEK_END);
-      fprintf(solutions, "%d\n", i);
+      fprintf(solutions, "%d\n", (i-1));
       fclose(solutions);
       cout << i << " ";
       indices.push_back(i);
