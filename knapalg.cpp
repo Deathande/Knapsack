@@ -1,6 +1,8 @@
 #include "knapalg.h"
 
 #define THREADS 2
+#define SOLUTIONS "solutions.out"
+FILE* sol;
 int mw;
 int ni;
 
@@ -18,6 +20,9 @@ vector<int> get_indicies(vector<d_type> weights,
   mw = max_weight;
   ni = values.size();
   population = generate_pop(num);
+  // truncate file
+  sol = fopen(SOLUTIONS, "w");
+  fclose(sol);
 
   #ifdef DEBUG
     cout << "population:" << endl;
@@ -73,7 +78,10 @@ vector<int> get_indicies(vector<d_type> weights,
     {
       best = population[rated[0].index];
       best_score = rated[0].score;
-      cout << best_score << endl;
+      sol = fopen(SOLUTIONS, "w");
+      for (int i = 0; i < best.size(); i++)
+        fprintf(sol, "%d\n", best[i]);
+      fclose(sol);
     }
   
     mix(rated, population);
