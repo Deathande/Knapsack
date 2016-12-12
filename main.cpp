@@ -15,9 +15,10 @@ int max_weight;
 int num_items;
 vector<d_type> weights;
 vector<d_type> values;
-int buffer_size = 5;
+int population_size = 5;
 int max_value;
 int total_weight;
+bool c = true;
 vector<int> indicies;
 
 void read_file();
@@ -26,6 +27,9 @@ pair<d_type, d_type> split_data(string line);
 
 int main(int argc, char** argv)
 {
+  if (argc > 1)
+    population_size = stoi(argv[1]);
+    
   cout << "----------------------" << endl;
   cout << "|                    |" << endl;
   cout << "|  Knapsack Problem  |" << endl;
@@ -50,9 +54,13 @@ int main(int argc, char** argv)
 
   cout << "Number of items: " << num_items << endl; 
   cout << "Maximum weight: " << max_weight << endl;
-  cout << "Buffer size: " << buffer_size << endl << endl;
+  cout << "Buffer size: " << population_size << endl << endl;
   clock_t t = clock();
-  indicies = get_indicies(weights, values, max_weight, 30, 200);
+  indicies = get_indicies(weights,
+                          values,
+                          max_weight,
+                          population_size,
+			  500);
   t = clock() - t;
 
   cout << "Item indicies: ";
@@ -94,8 +102,8 @@ void read_file()
     num_items = stoi(line);
     getline(file, line);
     max_weight = stoi(line);
-    weights.push_back(0);
-    values.push_back(0);
+    //weights.push_back(0);
+    //values.push_back(0);
     int i = 1;
     pair<d_type, d_type> split;
     while (getline(file, line))

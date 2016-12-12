@@ -8,9 +8,9 @@ vector<int> get_indicies(vector<d_type> weights,
                          vector<d_type> values,
                          int max_weight,
                          int num,
-			 int count)
+			 int iterations)
 {
-  //srand(time(NULL));
+  srand(time(NULL));
   vector< vector<int> > population;
   vector<int> best;
   int best_score = 0;
@@ -18,15 +18,13 @@ vector<int> get_indicies(vector<d_type> weights,
   mw = max_weight;
   ni = values.size();
   population = generate_pop(num);
-  for (unsigned int i = 0; i < population.size(); i++)
-    cout << population[i].size() << endl;
 
   #ifdef DEBUG
     cout << "population:" << endl;
     for (unsigned int i = 0; i < population.size(); i++)
     {
       cout << "{ ";
-      for (int j = 0; j < population[i].size(); j++)
+      for (unsigned int j = 0; j < population[i].size(); j++)
         cout << population[i][j] << " ";
       cout << "}";
       cout << endl;
@@ -35,9 +33,9 @@ vector<int> get_indicies(vector<d_type> weights,
   int sum_values;
   int sum_weights;
   int x = 0;
-  while (x < count)
+  while (x < iterations)
   {
-    cout  << "x: " << x << endl;
+    //cout  << x << endl;
     for (unsigned int i = 0; i < population.size(); i++)
     {
       sum_weights = 0;
@@ -61,10 +59,10 @@ vector<int> get_indicies(vector<d_type> weights,
     sort_populus(rated);
     #ifdef DEBUG
       cout << "sorted population:" << endl;
-      for (int i = 0; i < rated.size(); i++)
+      for (unsigned int i = 0; i < rated.size(); i++)
       {
         cout << "{ ";
-        for (int j = 0; j < population[rated[i].index].size(); j++)
+        for (unsigned int j = 0; j < population[rated[i].index].size(); j++)
           cout << population[rated[i].index][j] << " ";
         cout << "}";
         cout << " " << rated[i].score << endl;
@@ -72,16 +70,20 @@ vector<int> get_indicies(vector<d_type> weights,
     #endif
   
     if (rated[0].score > best_score)
+    {
       best = population[rated[0].index];
+      best_score = rated[0].score;
+      cout << best_score << endl;
+    }
   
     mix(rated, population);
   
      #ifdef DEBUG
       cout << "mixed population:" << endl;
-      for (int i = 0; i < population.size(); i++)
+      for (unsigned int i = 0; i < population.size(); i++)
       {
         cout << "{ ";
-        for (int j = 0; j < population[i].size(); j++)
+        for (unsigned int j = 0; j < population[i].size(); j++)
           cout << population[i][j] << " ";
         cout << "}";
         cout << endl;
@@ -126,7 +128,6 @@ vector<int> gen_member()
     indices[i] = i;
 
   int last = indices.size()-1;
-
   elements.resize(num);
   for (int i = 0; i < num; i++)
   {
@@ -155,6 +156,7 @@ void mix(vector<indi_score> &rated, vector< vector<int> > &pop)
       cout << endl;
     }
   #endif
+
   vector<int> v1;
   vector<int> v2;
   vector<int> temp;
@@ -179,16 +181,91 @@ void mix(vector<indi_score> &rated, vector< vector<int> > &pop)
     temp.clear();
   }
   pop = new_vect;
+  /*
+  int path;
+  for (int i = 0; i < mid_index; i++)
+  {
+    path = rand() % 2;
+    //cout << path << endl;
+    if (path)
+    {
+      //cout << "add" << endl;
+      mutate_add(pop[i]);
+    }
+    else
+    {
+      //cout << "change" << endl;
+      mutate_change(pop[i]);
+    }
+  }
+  */
 }
 
 void correct_vect(vector<int> &vect)
 {
   map<int, int> keys;
   for (unsigned int i = 0; i < vect.size(); i++)
-    keys[vect[i]];
+    keys[vect[i]] = 1;
   vect.clear();
   for (map<int, int>::iterator it = keys.begin(); it != keys.end(); it++)
     vect.push_back(it->first);
+}
+
+void mutate_change(vector<int> &vect)
+{
+  map<int, int> hash;
+  vector<int> indices;
+  int num_changes;
+  int index;
+  int temp;
+  int last;
+  for (unsigned int i = 0; i < vect.size(); i++)
+    hash[vect[i]] = 1;
+  for (int i = 0; i < ni; i++)
+  {
+    if (hash[i] == 0)
+      indices.push_back(i);
+  }
+  num_changes = rand() % vect.size();
+  last = indices.size() - 1;
+  for (int i = 0; i < num_changes; i++)
+  {
+    index = rand() % (last + 1);
+    vect[rand() % vect.size()] = indices[index];
+    temp = indices[index];
+    indices[index] = indices[last];
+    indices[last] = indices[index];
+    last--;
+  }
+}
+
+void mutate_add(vector<int> &vect)
+{
+  map<int, int> hash;
+  vector<int> indices;
+  int temp;
+  int num_additions;
+  int last;
+  int index;
+
+  for (unsigned int i = 0; i < vect.size(); i++)
+    hash[vect[i]] = 1;
+  for (int i = 0; i < ni; i++)
+  {
+    if (hash[i] == 0)
+      indices.push_back(i);
+  }
+  num_additions = rand() % (ni - vect.size());
+  last = indices.size() - 1;
+  for (int i = 0; i < num_additions; i++)
+  {
+    index = rand() % (last + 1);
+    vect.push_back(indices[index]);
+    temp = indices[index];
+    indices[index] = indices[last];
+    indices[last] = temp;
+    last--;
+  }
 }
 
 void sort_populus(vector<indi_score> &pop)

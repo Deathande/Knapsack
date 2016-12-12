@@ -26,7 +26,7 @@ vector<int> get_indicies(vector<d_type> weights,
                          vector<d_type> values,
 			 int max_weight,
 			 int num,
-			 int count);
+			 int iterations);
 
 double average(vector<d_type> data);
 vector< vector<int> > generate_pop(int num);
@@ -34,5 +34,7 @@ vector<int> gen_member();
 void sort_populus(vector<indi_score> &pop);
 void mix(vector<indi_score> &rated, vector< vector<int> > &pop);
 void correct_vect(vector<int> &vect);
+void mutate_add(vector<int> &vect);
+void mutate_change(vector<int> &vect);
 
 #endif
