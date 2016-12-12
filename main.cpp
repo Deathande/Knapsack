@@ -52,7 +52,7 @@ int main(int argc, char** argv)
   cout << "Maximum weight: " << max_weight << endl;
   cout << "Buffer size: " << buffer_size << endl << endl;
   clock_t t = clock();
-  indicies = get_indicies(weights, values, max_weight, 10, 3);
+  indicies = get_indicies(weights, values, max_weight, 30, 200);
   t = clock() - t;
 
   cout << "Item indicies: ";

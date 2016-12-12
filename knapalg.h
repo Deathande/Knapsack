@@ -1,12 +1,12 @@
 #ifndef __knap_alg
 #define __knap_alg
 
-//#include <algorithm>
+#include <algorithm>
 #include <iostream>
 #include <vector>
-//#include <cstdlib>
+#include <cstdlib>
 #include <ctime>
-//#include <utility>
+#include <utility>
 #include <map>
 #include <cmath>
 

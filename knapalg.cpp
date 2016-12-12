@@ -19,6 +19,9 @@ vector<int> get_indicies(vector<d_type> weights,
   ni = values.size();
   double average_weight = average(weights);
   population = generate_pop(num, average_weight);
+  for (int i = 0; i < population.size(); i++)
+    cout << population[i].size() << endl;
+
   #ifdef DEBUG
     cout << "population:" << endl;
     for (int i = 0; i < population.size(); i++)
@@ -35,6 +38,7 @@ vector<int> get_indicies(vector<d_type> weights,
   int x = 0;
   while (x < count)
   {
+    cout  << "x: " << x << endl;
     for (int i = 0; i < population.size(); i++)
     {
       sum_weights = 0;
@@ -84,6 +88,8 @@ vector<int> get_indicies(vector<d_type> weights,
         cout << endl;
       }
     #endif
+    rated.clear();
+    rated.resize(num);
     x++;
   }
  
@@ -113,9 +119,12 @@ vector< vector<int> > generate_pop(int num, double average_weight)
 vector<int> gen_member(double average_weight)
 {
   int target_num = floor(mw / (double)average_weight);
+  //cout << target_num << endl;
   vector<int> indices(ni);
   vector<int> elements;
   int num;
+  double percent;
+  /*
   if (target_num < 1)
   {
     num = rand() % ni + 1;
@@ -126,15 +135,28 @@ vector<int> gen_member(double average_weight)
     int diff = ni - target_num;
     if (rand() % 2)
     {
-      num = target_num + floor(diff * (rand() / (float)RAND_MAX));
+      percent = rand() / (float)RAND_MAX;
+      cout << "percent: " << percent << endl;
+      cout << "value: " << int(target_num * percent);
+      num = target_num + floor((double)target_num * percent);
     }
     else
-      num = target_num - floor(diff * (rand() / (float)RAND_MAX));
+    {
+      percent = rand() / (float)RAND_MAX;
+      cout << "percent: " << percent << endl;
+      cout << "value: " << int(target_num * percent);
+      num = target_num - floor((double)target_num * percent);
+    }
     if (num < 1)
+    {
       num = 1;
+    }
     if (num > ni)
       num = ni;
   }
+  */
+  num = rand() % (ni-1) + 1;
+  //cout << num << endl;
 
   for (int i = 0; i < ni; i++)
     indices[i] = i;
