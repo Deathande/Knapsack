@@ -110,14 +110,16 @@ vector<int> get_items( d_type* weights,
     fread(&j, sizeof(int), 1, disk);
     if (last > j)
     {
-      solutions = fopen(SOL_FILE, "w");
-      fprintf(solutions, "%d ", i);
+      solutions = fopen(SOL_FILE, "a");
+      //fseek(solutions, 0, SEEK_END);
+      fprintf(solutions, "%d\n", i);
       fclose(solutions);
       cout << i << " ";
       indices.push_back(i);
     }
     i--;
   }
+  //fclose(solutions);
   cout << endl;
   return indices;
 }
