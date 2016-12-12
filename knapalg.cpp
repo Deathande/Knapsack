@@ -21,11 +21,12 @@ void buffered_table(d_type* weights,
   for (int i = 0; i <= mw; i++)
   {
     current[i] = 0;
-    c_dir[i] = 0;
   }
-  *prev = *current;
+  prev = current;
   for (int i = 1; i <= ni; i++)
   {
+    current = new int[mw+1];
+    current[0] = 0;
     c_dir[0] = i-1;
     for (int j = 1; j <= mw; j++)
     {
@@ -34,7 +35,8 @@ void buffered_table(d_type* weights,
         current[j] = prev[j];
         c_dir[j] = j;
         #ifdef DEBUG
-          //cout << c_dir[j] << " ";
+          //cout << current[j] << " ";
+          cout << c_dir[j] << " ";
         #endif
       }
       else
@@ -47,7 +49,8 @@ void buffered_table(d_type* weights,
           current[j] = prev[j];
           c_dir[j] = j;
           # ifdef DEBUG
-            //cout << c_dir[j] << " ";
+            //cout << current[j] << " ";
+            cout << c_dir[j] << " ";
           # endif
         }
         else
@@ -55,27 +58,26 @@ void buffered_table(d_type* weights,
           current[j] = n_above;
           c_dir[j] = n_above_index;
           # ifdef DEBUG
-            //cout << c_dir[j] << " ";
+            //cout << current[j] << " ";
+            cout << c_dir[j] << " ";
           # endif
         }
       }
     }
-    for (int i = 0; i < mw+1; i++)
-      cout << c_dir[i] << " ";
-    cout << endl;
     fwrite(c_dir,
            sizeof(int),
            mw+1,
            disk);
-    *prev = *current;
+    prev = current;
 
     #ifdef DEBUG
       cout << endl;
     #endif
   }
-  delete [] current;
-  delete [] prev;
-  delete [] c_dir;
+  cout << current[mw] << endl;
+  //delete [] current;
+  //delete [] prev;
+  //delete [] c_dir;
   fclose(disk);
 }
 
@@ -95,22 +97,15 @@ vector<int> get_items( d_type* weights,
   buffered_table(weights, values);
   vector<int> indices;
   disk = fopen(OUT_FILE, "r"); 
-  fseek(disk,
-        -i * mw * sizeof(int) - (j+1) * sizeof(int),
-	SEEK_END);
-  last = j;
-  fread(&j, sizeof(int), 1, disk);
-  cout << "br: " << j << endl;
-  i--;
-  for (int x = 0; x < ni; x++)
+  while (i > 0)
   {
-    if (last < j)
-      indices.push_back(i);
-    fseek(disk,
-          -i * (mw+1) * sizeof(int) - (j+1) * sizeof(int),
-          SEEK_END);
     last = j;
+    fseek(disk,
+        (i-1) * (mw+1) * sizeof(int) + j * sizeof(int),
+	SEEK_SET);
     fread(&j, sizeof(int), 1, disk);
+    if (last > j)
+      indices.push_back(i);
     i--;
   }
 
