@@ -10,21 +10,20 @@ vector<int> get_indicies(vector<d_type> weights,
                          int num,
 			 int count)
 {
-  srand(time(NULL));
+  //srand(time(NULL));
   vector< vector<int> > population;
   vector<int> best;
   int best_score = 0;
   vector<indi_score> rated(num); // first = index; second = score
   mw = max_weight;
   ni = values.size();
-  double average_weight = average(weights);
-  population = generate_pop(num, average_weight);
-  for (int i = 0; i < population.size(); i++)
+  population = generate_pop(num);
+  for (unsigned int i = 0; i < population.size(); i++)
     cout << population[i].size() << endl;
 
   #ifdef DEBUG
     cout << "population:" << endl;
-    for (int i = 0; i < population.size(); i++)
+    for (unsigned int i = 0; i < population.size(); i++)
     {
       cout << "{ ";
       for (int j = 0; j < population[i].size(); j++)
@@ -39,10 +38,10 @@ vector<int> get_indicies(vector<d_type> weights,
   while (x < count)
   {
     cout  << "x: " << x << endl;
-    for (int i = 0; i < population.size(); i++)
+    for (unsigned int i = 0; i < population.size(); i++)
     {
       sum_weights = 0;
-      for (int j = 0; j < population[i].size(); j++)
+      for (unsigned int j = 0; j < population[i].size(); j++)
         sum_weights += weights[population[i][j]];
       rated[i].index = i;
       if (sum_weights > max_weight)
@@ -52,7 +51,7 @@ vector<int> get_indicies(vector<d_type> weights,
       else
       {
         sum_values = 0;
-        for (int j = 0; j < population[i].size(); j++)
+        for (unsigned int j = 0; j < population[i].size(); j++)
         {
           sum_values += values[population[i][j]];
         }
@@ -105,58 +104,23 @@ double average(vector<d_type> data)
   return sum / data.size();
 }
 
-vector< vector<int> > generate_pop(int num, double average_weight)
+vector< vector<int> > generate_pop(int num)
 {
   vector< vector<int> > population;
 //# pragma omp parallel for num_threads(THREADS) 
   for (int i = 0; i < num; i++)
   {
-    population.push_back(gen_member(average_weight));
+    population.push_back(gen_member());
   }
   return population;
 }
 
-vector<int> gen_member(double average_weight)
+vector<int> gen_member()
 {
-  int target_num = floor(mw / (double)average_weight);
-  //cout << target_num << endl;
   vector<int> indices(ni);
   vector<int> elements;
   int num;
-  double percent;
-  /*
-  if (target_num < 1)
-  {
-    num = rand() % ni + 1;
-  }
-  else
-  {
-    //num = target_num;
-    int diff = ni - target_num;
-    if (rand() % 2)
-    {
-      percent = rand() / (float)RAND_MAX;
-      cout << "percent: " << percent << endl;
-      cout << "value: " << int(target_num * percent);
-      num = target_num + floor((double)target_num * percent);
-    }
-    else
-    {
-      percent = rand() / (float)RAND_MAX;
-      cout << "percent: " << percent << endl;
-      cout << "value: " << int(target_num * percent);
-      num = target_num - floor((double)target_num * percent);
-    }
-    if (num < 1)
-    {
-      num = 1;
-    }
-    if (num > ni)
-      num = ni;
-  }
-  */
   num = rand() % (ni-1) + 1;
-  //cout << num << endl;
 
   for (int i = 0; i < ni; i++)
     indices[i] = i;
@@ -206,7 +170,7 @@ void mix(vector<indi_score> &rated, vector< vector<int> > &pop)
     {
       temp.push_back(v1[i]);
     }
-    for (int i = split_point2; i < v2.size(); i++)
+    for (unsigned int i = split_point2; i < v2.size(); i++)
     {
       temp.push_back(v2[i]);
     }
@@ -220,7 +184,7 @@ void mix(vector<indi_score> &rated, vector< vector<int> > &pop)
 void correct_vect(vector<int> &vect)
 {
   map<int, int> keys;
-  for (int i = 0; i < vect.size(); i++)
+  for (unsigned int i = 0; i < vect.size(); i++)
     keys[vect[i]];
   vect.clear();
   for (map<int, int>::iterator it = keys.begin(); it != keys.end(); it++)
