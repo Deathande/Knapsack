@@ -14,7 +14,7 @@ void buffered_table(d_type* weights,
     cout << "Table excluding zero rows" << endl;
   #endif 
   int* current = new int[mw+1];
-  int* prev = new int[mw+1];
+  int* prev;
   int* c_dir= new int[mw+1];
   disk = fopen(OUT_FILE, "w");
 
