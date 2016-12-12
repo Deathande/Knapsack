@@ -1,8 +1,10 @@
 #include "knapalg.h"
 
 #define OUT_FILE "temp_data.out"
+#define SOL_FILE "solution.out"
 
 FILE* disk;
+FILE* solutions;
 int mw;
 int ni;
 int bs;
@@ -92,6 +94,9 @@ vector<int> get_items( d_type* weights,
   bs = buffer_size;
   int i = ni;
   int j = mw;
+  solutions = fopen(SOL_FILE, "w");
+  fprintf(solutions, "indicies\n");
+  fclose(solutions);
 
   buffered_table(weights, values);
   vector<int> indices;
@@ -105,10 +110,14 @@ vector<int> get_items( d_type* weights,
     fread(&j, sizeof(int), 1, disk);
     if (last > j)
     {
+      solutions = fopen(SOL_FILE, "w");
+      fprintf(solutions, "%d ", i);
+      fclose(solutions);
+      cout << i << " ";
       indices.push_back(i);
     }
     i--;
   }
-
+  cout << endl;
   return indices;
 }
