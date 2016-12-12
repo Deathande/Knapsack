@@ -73,12 +73,9 @@ int main(int argc, char** argv)
   cout << "Maximum weight: " << max_weight << endl;
   cout << "Buffer size: " << buffer_size << endl << endl;
   time_t t = clock();
+  cout << "Item indicies: ";
   indicies = get_items(weights, values, max_weight, num_items, buffer_size);
   t = clock() - t;
-  cout << "Item indicies: ";
-  for (unsigned int i = 0; i < indicies.size(); i++)
-    cout << indicies[i] << " ";
-  cout << endl;
 
   cout << "Respective weights: ";
   for (unsigned int i = 0; i < indicies.size(); i++)
